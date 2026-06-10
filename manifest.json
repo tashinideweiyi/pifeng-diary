@@ -1,0 +1,26 @@
+{
+  "name": "PiFeng日记",
+  "short_name": "PiFeng日记",
+  "description": "一个轻可爱、每天换主题、只保存在本地的私人流水账日记工具。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eaf8f3",
+  "theme_color": "#72c9b6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23eaf8f3'/%3E%3Crect x='36' y='42' width='120' height='112' rx='32' fill='%23fffefd'/%3E%3Ccircle cx='72' cy='80' r='10' fill='%2372c9b6'/%3E%3Ccircle cx='96' cy='80' r='10' fill='%23f38aa4'/%3E%3Ccircle cx='120' cy='80' r='10' fill='%23e7bd4f'/%3E%3Cpath d='M65 114h62' stroke='%23304640' stroke-width='9' stroke-linecap='round'/%3E%3Ctext x='96' y='143' text-anchor='middle' font-size='34' font-family='Arial' fill='%23304640'%3EP%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='116' fill='%23eaf8f3'/%3E%3Crect x='96' y='112' width='320' height='288' rx='82' fill='%23fffefd'/%3E%3Ccircle cx='190' cy='212' r='27' fill='%2372c9b6'/%3E%3Ccircle cx='256' cy='212' r='27' fill='%23f38aa4'/%3E%3Ccircle cx='322' cy='212' r='27' fill='%23e7bd4f'/%3E%3Cpath d='M170 302h172' stroke='%23304640' stroke-width='24' stroke-linecap='round'/%3E%3Ctext x='256' y='379' text-anchor='middle' font-size='92' font-family='Arial' fill='%23304640'%3EP%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
