@@ -1,5 +1,13 @@
-const CACHE_NAME = "pifeng-diary-v5";
-const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./manifest.json"];
+const CACHE_NAME = "pifeng-diary-v6";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
