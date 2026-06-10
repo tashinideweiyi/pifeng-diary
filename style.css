@@ -24,6 +24,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0;
+  padding-bottom: env(safe-area-inset-bottom);
   color: var(--text);
   background:
     radial-gradient(circle at 16% 8%, color-mix(in srgb, var(--soft) 62%, transparent), transparent 18rem),
@@ -51,20 +52,39 @@ button {
   min-height: 100dvh;
   display: flex;
   justify-content: center;
-  padding: max(18px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
+  padding: max(18px, env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));
 }
 
 .journal-card {
   width: min(100%, 560px);
   min-height: calc(100vh - 36px);
   min-height: calc(100dvh - 36px);
-  padding: 20px 16px 16px;
+  padding: 20px 16px 28px;
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 30px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.18)),
     var(--card);
   box-shadow: 0 12px 32px rgba(58, 72, 66, 0.08);
+}
+
+body.keyboard-open {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-y: auto;
+}
+
+body.keyboard-open .app-shell {
+  padding-bottom: calc(220px + env(safe-area-inset-bottom));
+}
+
+body.keyboard-open .journal-card {
+  padding-bottom: 220px;
+}
+
+body.keyboard-open .action-bar {
+  position: static;
+  margin-bottom: 18px;
 }
 
 .page-header {
@@ -180,7 +200,8 @@ button {
 .field textarea {
   width: 100%;
   min-height: 42px;
-  resize: vertical;
+  overflow: hidden;
+  resize: none;
   border: 1px solid var(--line);
   border-radius: 17px;
   padding: 9px 11px;
@@ -199,6 +220,7 @@ button {
   border-color: color-mix(in srgb, var(--accent) 70%, white);
   background: color-mix(in srgb, var(--soft) 56%, white);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  scroll-margin-bottom: 220px;
 }
 
 .history-panel {

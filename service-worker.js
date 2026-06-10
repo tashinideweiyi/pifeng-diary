@@ -1,4 +1,4 @@
-const CACHE_NAME = "pifeng-diary-v6";
+const CACHE_NAME = "pifeng-diary-v8";
 const ASSETS = [
   "./",
   "./index.html",

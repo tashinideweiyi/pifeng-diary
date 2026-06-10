@@ -150,6 +150,7 @@
   const backupFile = $("#backupFile");
   const moreButton = $("#moreButton");
   const moreMenu = $("#moreMenu");
+  const textareas = Array.from(document.querySelectorAll("textarea"));
 
   function toDateInputValue(date) {
     const year = date.getFullYear();
@@ -202,6 +203,21 @@
     fields.forEach(([id]) => {
       document.getElementById(id).value = entry[id] || "";
     });
+    resizeAllTextareas();
+  }
+
+  function autoResizeTextarea(textarea) {
+    if (!textarea.value) {
+      textarea.style.height = "";
+      return;
+    }
+    textarea.style.height = "auto";
+    const minHeight = Number.parseFloat(window.getComputedStyle(textarea).minHeight) || 42;
+    textarea.style.height = `${Math.max(textarea.scrollHeight, minHeight)}px`;
+  }
+
+  function resizeAllTextareas() {
+    textareas.forEach(autoResizeTextarea);
   }
 
   function isEmptyEntry(entry) {
@@ -271,6 +287,7 @@
     datePicker.value = dateKey;
     applyDailyTheme(dateKey);
     fillForm(getEntry(dateKey));
+    resizeAllTextareas();
     entryForm.hidden = false;
     historyPanel.hidden = true;
     showStatus(dateKey === todayDate ? "已自动保存" : "正在编辑过去日记");
@@ -510,7 +527,56 @@
     action();
   }
 
-  entryForm.addEventListener("input", scheduleSave);
+  function isKeyboardLikelyOpen() {
+    if (!window.visualViewport) return document.body.classList.contains("keyboard-open");
+    return window.innerHeight - window.visualViewport.height > 120;
+  }
+
+  function scrollTextareaIntoView(textarea) {
+    window.setTimeout(() => {
+      textarea.scrollIntoView({
+        behavior: "smooth",
+        block: isKeyboardLikelyOpen() ? "center" : "nearest",
+      });
+    }, 250);
+  }
+
+  function handleTextareaFocus(event) {
+    document.body.classList.add("keyboard-open");
+    scrollTextareaIntoView(event.currentTarget);
+  }
+
+  function handleTextareaBlur() {
+    window.setTimeout(() => {
+      if (!document.activeElement || document.activeElement.tagName !== "TEXTAREA") {
+        document.body.classList.remove("keyboard-open");
+      }
+    }, 200);
+  }
+
+  function syncKeyboardState() {
+    if (!window.visualViewport) return;
+    const activeTextarea = document.activeElement && document.activeElement.tagName === "TEXTAREA";
+    if (activeTextarea && isKeyboardLikelyOpen()) {
+      document.body.classList.add("keyboard-open");
+      scrollTextareaIntoView(document.activeElement);
+    }
+  }
+
+  entryForm.addEventListener("input", (event) => {
+    if (event.target && event.target.tagName === "TEXTAREA") {
+      autoResizeTextarea(event.target);
+    }
+    scheduleSave();
+  });
+  textareas.forEach((textarea) => {
+    textarea.addEventListener("focus", handleTextareaFocus);
+    textarea.addEventListener("blur", handleTextareaBlur);
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", syncKeyboardState);
+    window.visualViewport.addEventListener("scroll", syncKeyboardState);
+  }
   copyButton.addEventListener("click", copyToday);
   $("#historyButton").addEventListener("click", renderHistory);
   moreButton.addEventListener("click", toggleMoreMenu);
