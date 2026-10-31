@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f8f4">
+<meta name="description" content="便便打卡：每天轻点一下，记录有没有排便和便便状态。数据仅储存在浏览器。">
+<title>便便打卡 💩</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;--bg:#f4f8f4;--ink:#304338;--quiet:#7d8a80;--line:#e2ebe2;--green:#387958;--pale:#e7f4e9;--orange:#a76630;--orangepale:#fff0e2}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;min-height:100vh}
+main{max-width:490px;margin:auto;padding:27px 17px 55px}
+h1{font-size:26px;margin:0;font-weight:800;letter-spacing:-.5px}
+.sub{font-size:13px;color:var(--quiet);margin:7px 0 22px}
+.card{background:#fff;border:1px solid #edf1eb;border-radius:20px;box-shadow:0 6px 28px #26452b0b;padding:19px;margin:0 0 15px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+h2{margin:0 0 15px;font-size:17px}
+.small{color:var(--quiet);font-size:12px}
+.date{font-size:15px;font-weight:700}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+.btn{border:1px solid var(--line);border-radius:14px;background:#f9fbf8;color:var(--ink);padding:14px 11px;font-size:15px;font-weight:650}
+.btn:active{transform:scale(.985)}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:17px}
+.big{font-size:18px;padding:22px 10px;border-radius:17px}
+.active-yes{background:var(--pale)!important;color:#246645!important;border-color:#6db586!important}
+.active-no{background:var(--orangepale)!important;color:#965022!important;border-color:#efbb8b!important}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+.chips .btn{font-size:13px;padding:10px 12px;border-radius:12px}
+.sel{color:#fff!important;background:var(--green)!important;border-color:var(--green)!important}
+.field{margin-top:16px}
+.field label{font-size:13px;color:#607266;font-weight:700}
+.good{display:inline-block;border-radius:99px;padding:6px 10px;background:var(--pale);color:var(--green);font-size:12px;font-weight:650}
+.monthrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.arrow{background:#f4f8f4;border:1px solid var(--line);color:#4e7059;border-radius:10px;width:34px;height:34px;font-size:20px}
+.week,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.week{text-align:center;font-size:12px;color:#87958a;margin-bottom:8px}
+.day{border:0;border-radius:12px;background:transparent;min-height:43px;font-size:14px;color:var(--ink);position:relative}
+.day.has-yes{background:var(--pale);color:#296341;font-weight:750}
+.day.has-no{background:var(--orangepale);color:#9e5f2b;font-weight:750}
+.day.current{outline:2px solid #608a69;outline-offset:-2px}
+.day.today:after{content:"";position:absolute;bottom:3px;left:calc(50% - 2px);height:4px;width:4px;border-radius:50%;background:currentColor}
+.legend{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:12px;color:var(--quiet);font-size:12px}
+.dot{width:10px;height:10px;display:inline-block;border-radius:4px;margin-right:4px}
+.stat{font-size:13px;color:#597263;margin-top:13px}
+.reset,.link{border:none;background:none;color:#738479;text-decoration:underline;font-size:12px;cursor:pointer}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px}
+.hidden{display:none!important}
+.note{color:#839087;font-size:12px;line-height:1.7;text-align:center;margin:23px 8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>💩 便便打卡</h1>
+  <p class="sub">每天点一点，看看肠道的小日常 🌱</p>
+
+  <section class="card">
+    <div class="head">
+      <div>
+        <div class="small">正在记录</div>
+        <div id="selectedDate" class="date"></div>
+      </div>
+      <button class="btn" id="todayBtn" style="font-size:12px;padding:9px 13px">回到今天</button>
+    </div>
+    <div class="choice">
+      <button type="button" data-status="yes" class="btn big">💚 拉了</button>
+      <button type="button" data-status="no" class="btn big">🌙 没拉</button>
+    </div>
+    <div id="extra" class="hidden">
+      <div class="field"><label>便便是什么状态？</label><div class="chips" id="types">
+        <button class="btn" data-type="成型">💩 成型</button>
+        <button class="btn" data-type="干硬">🪨 干硬</button>
+        <button class="btn" data-type="软稀">☁️ 软稀</button>
+        <button class="btn" data-type="水样">💧 水样</button>
+      </div></div>
+      <div class="field"><label>今天拉了几次？</label><div class="chips" id="counts">
+        <button class="btn" data-count="1">1 次</button>
+        <button class="btn" data-count="2">2 次</button>
+        <button class="btn" data-count="3+">3 次以上</button>
+      </div></div>
+      <div class="field"><label>有没有这些感觉？（可多选）</label><div class="chips" id="flags">
+        <button class="btn" data-flag="量少">量少</button>
+        <button class="btn" data-flag="费劲">费劲</button>
+        <button class="btn" data-flag="没排干净">没排干净</button>
+      </div></div>
+    </div>
+    <div class="bottom"><span class="good" id="saved" style="visibility:hidden">✓ 自动保存</span><button class="reset" id="clear">清空这天记录</button></div>
+  </section>
+
+  <section class="card">
+    <div class="monthrow"><button id="prev" class="arrow" aria-label="上个月">‹</button><h2 id="monthName" style="margin:0"></h2><button id="next" class="arrow" aria-label="下个月">›</button></div>
+    <div class="week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+    <div class="days" id="days"></div>
+    <div class="legend">
+      <span><span class="dot" style="background:#d4edda"></span>拉了</span>
+      <span><span class="dot" style="background:#ffdfc4"></span>没拉</span>
+      <span>空白＝没记录</span>
+    </div>
+    <div class="stat" id="summary"></div>
+  </section>
+  <section class="card">
+    <div class="head"><div><h2 style="margin:0 0 4px">我的记录</h2><div class="small">只存在当前手机浏览器中</div></div><button class="btn" id="export" style="padding:10px 14px;font-size:13px">导出 CSV</button></div>
+  </section>
+  <p class="note">换手机、换浏览器或清除浏览器数据可能丢失记录，请定期导出备份。<br>这是日常观察小工具，不用于医疗诊断。</p>
+</main>
+<script>
+(function(){
+"use strict";
+var KEY="bianbian-checkin-v1";
+var records={};
+try{records=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){records={};}
+var now=new Date();now.setHours(12,0,0,0);
+var selected=new Date(now),shown=new Date(now.getFullYear(),now.getMonth(),1);
+var z=function(n){return String(n).padStart(2,"0");};
+var k=function(d){return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate());};
+var el=function(id){return document.getElementById(id);};
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(records));}catch(e){alert("浏览器无法保存，试试普通模式打开。");}}
+function change(fn){var key=k(selected);var r=records[key]||{status:"yes",flags:[]};fn(r);records[key]=r;persist();render();}
+function render(){
+ var key=k(selected),r=records[key]||{};
+ el("selectedDate").textContent=selected.toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+ document.querySelectorAll("[data-status]").forEach(function(b){b.classList.toggle("active-"+b.dataset.status,b.dataset.status===r.status);});
+ el("extra").classList.toggle("hidden",r.status!=="yes");
+ document.querySelectorAll("[data-type]").forEach(function(b){b.classList.toggle("sel",r.type===b.dataset.type);});
+ document.querySelectorAll("[data-count]").forEach(function(b){b.classList.toggle("sel",r.count===b.dataset.count);});
+ document.querySelectorAll("[data-flag]").forEach(function(b){b.classList.toggle("sel",(r.flags||[]).includes(b.dataset.flag));});
+ el("saved").style.visibility=r.status?"visible":"hidden";
+ el("monthName").textContent=shown.getFullYear()+" 年 "+(shown.getMonth()+1)+" 月";
+ var grid=el("days");grid.innerHTML="";
+ var start=(new Date(shown.getFullYear(),shown.getMonth(),1).getDay()+6)%7;
+ for(var n=0;n<start;n++){var blank=document.createElement("div");grid.appendChild(blank);}
+ var max=new Date(shown.getFullYear(),shown.getMonth()+1,0).getDate(),yes=0,no=0;
+ for(var i=1;i<=max;i++){
+  var d=new Date(shown.getFullYear(),shown.getMonth(),i,12),dayKey=k(d),item=records[dayKey]||{};
+  var b=document.createElement("button");b.type="button";b.className="day";b.textContent=i;
+  if(item.status==="yes"){b.classList.add("has-yes");yes++;}
+  if(item.status==="no"){b.classList.add("has-no");no++;}
+  if(dayKey===k(selected))b.classList.add("current");
+  if(dayKey===k(now))b.classList.add("today");
+  b.setAttribute("aria-label",dayKey+(item.status==="yes"?" 已排便":item.status==="no"?" 未排便":" 未记录"));
+  b.addEventListener("click",(function(date){return function(){selected=date;render();};})(d));
+  grid.appendChild(b);
+ }
+ el("summary").textContent="本月：排便 "+yes+" 天 · 未排便 "+no+" 天 · 共记录 "+(yes+no)+" 天";
+}
+document.querySelectorAll("[data-status]").forEach(function(b){b.addEventListener("click",function(){change(function(r){r.status=b.dataset.status;if(r.status==="yes"&&!r.count)r.count="1";});});});
+document.querySelectorAll("[data-type]").forEach(function(b){b.addEventListener("click",function(){change(function(r){r.type=b.dataset.type;});});});
+document.querySelectorAll("[data-count]").forEach(function(b){b.addEventListener("click",function(){change(function(r){r.count=b.dataset.count;});});});
+document.querySelectorAll("[data-flag]").forEach(function(b){b.addEventListener("click",function(){change(function(r){if(!r.flags)r.flags=[];var i=r.flags.indexOf(b.dataset.flag);if(i>=0)r.flags.splice(i,1);else r.flags.push(b.dataset.flag);});});});
+el("prev").onclick=function(){shown=new Date(shown.getFullYear(),shown.getMonth()-1,1);render();};
+el("next").onclick=function(){shown=new Date(shown.getFullYear(),shown.getMonth()+1,1);render();};
+el("todayBtn").onclick=function(){selected=new Date(now);shown=new Date(now.getFullYear(),now.getMonth(),1);render();};
+el("clear").onclick=function(){if(!records[k(selected)])return;if(confirm("清空这一天的记录？")){delete records[k(selected)];persist();render();}};
+el("export").onclick=function(){
+ var rows=[["日期","是否排便","状态","次数","感受"].join(",")];
+ Object.keys(records).sort().forEach(function(date){var r=records[date];var fields=[date,r.status==="yes"?"拉了":"没拉",r.type||"",r.count||"",(r.flags||[]).join("、")];rows.push(fields.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(","));});
+ var blob=new Blob(["\uFEFF"+rows.join("\r\n")],{type:"text/csv;charset=utf-8"});
+ var url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="便便打卡-"+k(now)+".csv";a.click();setTimeout(function(){URL.revokeObjectURL(url);},3000);
+};
+render();
+})();
+</script>
+</body>
+</html>
